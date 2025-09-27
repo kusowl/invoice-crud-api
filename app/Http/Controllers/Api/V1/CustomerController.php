@@ -19,12 +19,19 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         $filter = new CustomerFilter;
-        $queryItems = $filter->transform($request);
-        if (empty($queryItems)) {
-            return new CustomerCollection(Customer::paginate());
+        $filterItems = $filter->transform($request);
+
+        /**
+         * Even if no query is passed, an empty where clause will not affect the results.
+         * So, there is no need of checking ig $filterItems is empty.
+         */
+        $customer = Customer::where($filterItems);
+
+        if ($request->query('includeInvoices')) {
+            $customer->with('invoices');
         }
 
-        return new CustomerCollection(Customer::where($queryItems)->paginate());
+        return new CustomerCollection($customer->paginate());
     }
 
     /**
@@ -48,6 +55,14 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        /**
+         * This customer object does not contains any query parameters, so we have to load
+         * required relationships manualy
+         */
+        if (request()->query('includeInvoices')) {
+            return new CustomerResource($customer->loadMissing('invoices'));
+        }
+
         return new CustomerResource($customer);
     }
 

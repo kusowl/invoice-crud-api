@@ -25,13 +25,15 @@ class QueryFilter
         'like' => 'like',
     ];
 
+    protected $ignoreParams = [];
+
     public function transform(Request $request): array
     {
         $query = $request->query();
         $elqQuery = [];
         foreach ($query as $column => $compArr) {
             // Skip Pagination
-            if ($column == 'page') {
+            if ($column == 'page' || in_array($column, $this->ignoreParams)) {
                 continue;
             }
             // Check if column is allowed

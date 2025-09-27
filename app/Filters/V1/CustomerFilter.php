@@ -20,4 +20,8 @@ class CustomerFilter extends QueryFilter
     protected array $columnMap = [
         'postalCode' => 'postal_code',
     ];
+
+    protected $ignoreParams = [
+        'includeInvoices',
+    ];
 }
