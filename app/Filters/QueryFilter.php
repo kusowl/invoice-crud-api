@@ -30,6 +30,10 @@ class QueryFilter
         $query = $request->query();
         $elqQuery = [];
         foreach ($query as $column => $compArr) {
+            // Skip Pagination
+            if ($column == 'page') {
+                continue;
+            }
             // Check if column is allowed
             if (! array_key_exists($column, $this->allowedColumns) && ! in_array($column, $this->allowedColumns)) {
                 throw new Exception("Column [ {$column} ] is not allowed");
