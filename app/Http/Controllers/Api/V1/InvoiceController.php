@@ -12,6 +12,7 @@ use App\Http\Resources\V1\InvoiceResource;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Auth;
 
 class InvoiceController extends Controller
 {
@@ -30,19 +31,11 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreInvoiceRequest $request)
     {
-        //
+        return new InvoiceResource(Invoice::create($request->all()));
     }
 
     public function bulkStore(BulkStoreInvoiceRequest $request)
@@ -64,19 +57,11 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Invoice $invoice)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
-        //
+        $invoice->update($request->all());
     }
 
     /**
@@ -84,6 +69,10 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
-        //
+        if (Auth::check() && Auth::user()->tokenCan('delete'))
+            $invoice->delete();
+        else {
+            abort(403, 'Unauthorized action');
+        }
     }
 }

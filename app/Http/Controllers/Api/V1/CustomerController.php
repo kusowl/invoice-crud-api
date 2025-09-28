@@ -71,6 +71,10 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
+        if (Auth::check() && Auth::user()->tokenCan('delete'))
+            $customer->delete();
+        else {
+            abort(403, 'Unauthorized action');
+        }
     }
 }
