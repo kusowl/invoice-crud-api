@@ -17,7 +17,7 @@ class CustomerFilter extends QueryFilter
         'postalCode' => ['gt', 'lt', 'gte', 'lte'],
     ];
 
-    protected array $columnMap = [
+    public array $columnMap = [
         'postalCode' => 'postal_code',
     ];
 

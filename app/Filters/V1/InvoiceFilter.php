@@ -15,7 +15,7 @@ class InvoiceFilter extends QueryFilter
         'paidDate' => ['gt', 'lt', 'gte', 'lte'],
     ];
 
-    protected array $columnMap = [
+    public array $columnMap = [
         'customerId' => 'customer_id',
         'billedDate' => 'billed_date',
         'paidDate' => 'paid_date',

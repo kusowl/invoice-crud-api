@@ -14,7 +14,7 @@ class QueryFilter
 
     protected array $allowedColumns = [];
 
-    protected array $columnMap = [];
+    public array $columnMap = [];
 
     protected array $operatorMap = [
         'gt' => '>',
