@@ -27,7 +27,7 @@ Route::get('/setup', function () {
         return [
             'adminToken' => $user->createToken('admin-token', ['create', 'update', 'delete'])->plainTextToken,
             'updateToken' => $user->createToken('update-token', ['create', 'update'])->plainTextToken,
-            'basicToken' => $user->createToken('basic-token')->plainTextToken,
+            'basicToken' => $user->createToken('basic-token', ['none'])->plainTextToken,
         ];
     }
 });
