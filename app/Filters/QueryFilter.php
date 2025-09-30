@@ -2,15 +2,15 @@
 
 namespace App\Filters;
 
-use Exception;
 use Illuminate\Http\Request;
+use Exception;
 
 class QueryFilter
 {
     /*
-    * By default 'equal to' and 'not equal to' is granted to all columns,
-    * other operators must be explicitly specified safeOperation property.
-    */
+     * By default 'equal to' and 'not equal to' is granted to all columns,
+     * other operators must be explicitly specified safeOperation property.
+     */
 
     protected array $allowedColumns = [];
 
