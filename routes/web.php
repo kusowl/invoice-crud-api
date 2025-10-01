@@ -25,9 +25,9 @@ Route::get('/setup', function () {
         $user = Auth::user();
 
         return [
-            'adminToken' => $user->createToken('admin-token', ['create', 'update', 'delete'])->plainTextToken,
-            'updateToken' => $user->createToken('update-token', ['create', 'update'])->plainTextToken,
-            'basicToken' => $user->createToken('basic-token', ['none'])->plainTextToken,
+            'Level-3' => $user->createToken('admin-token', ['create', 'update', 'delete'])->plainTextToken,
+            'Level-2' => $user->createToken('update-token', ['create', 'update'])->plainTextToken,
+            'Level-1' => $user->createToken('basic-token', ['none'])->plainTextToken,
         ];
     }
 });

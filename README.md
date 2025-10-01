@@ -1,60 +1,427 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CustomerInvoice CRUD API 
+This is a toy project where i have explored how to built api in Laravel.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Contents**
 
-## About Laravel
+[Operators](#Operators)
+[Endpoints](#Endpoints)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Authentication
+By Default it uses Laravel Santum for authentication, with three authorization levels.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+|Levels|Abilites|
+|:-----|:-----|
+|  Level 3    |     Create, Update, Delete |
+|  Level  2|      Create, Update|
+|  Level 1  |  Read Only    |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+You can get these tokens by visiting `/setup`, which will return these three tokens.
+You have to pass one of these bearer token, with authentication header.
 
-## Learning Laravel
+## Response
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+By deafult all results are paginated with 15 entries in each page. Response format is :-
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```json
+{
+  "data" : [{...}, {...}],
+  "links": {
+    "first": ".../api/v1/customers?page=1",
+    "last": "../api/v1/customers?page=5",
+    "prev": ".../api/v1/customers?page=1",
+    "next": ".../api/v1/customers?page=3"
+  },
+   "meta": {
+    "current_page": 2,
+    "from": 16,
+    "last_page": 5,
+    "links": [
+      {
+        "url": "http://localhost:8000/api/v1/customers?page=1",
+        "label": "&laquo; Previous",
+        "page": 1,
+        "active": false
+      },
+      { ...},
+      {
+        "url": "http://localhost:8000/api/v1/customers?page=2",
+        "label": "2",
+        "page": 2,
+        "active": true
+      },
+      {...},{...},{....},
+      {
+        "url": "http://localhost:8000/api/v1/customers?page=3",
+        "label": "Next &raquo;",
+        "page": 3,
+        "active": false
+      }
+    ],
+    "path": "http://localhost:8000/api/v1/customers",
+    "per_page": 15,
+    "to": 30,
+    "total": 68
+  }
+}
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Operators
 
-## Laravel Sponsors
+|Operator|Meaning|
+|:-----|:-----|
+|    =  |  equals to    |
+|  nte    | not equals to (<>)     |
+|      gt| greater than   (>)  |
+|    lt  | lesser than (<)     |
+|  gte    |  greater than or equal ( >=)     |
+|     lte | lesser than or equal (<=)     |
+| like | like |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Usage**
 
-### Premium Partners
+Incase of *equals to*,
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+`<parameter>=<value>`
 
-## Contributing
+example, 
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+`name=Kushal`
 
-## Code of Conduct
+Others operators,
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+`<parameter>[<operator>]=<value>`
 
-## Security Vulnerabilities
+example, 
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+`name[nte]=Kushal`
+
+## Endpoints
+
+This api is versionised, so the endpoint structure is 
+`api/<version>[v1, v2]/<endpoint>`
+
+for example, `api/v1/customers`
+
+### Get All Customers
+
+`GET /api/v1/customers`
+
+Retrives a list of all available customers. 
+`Status - 200`
+
+**Parameters**
+
+|Parameter|Type                     |Allowed Operators|Allowed Values|Description                                                |
+|:----------|:------------------|:------------------|:---------------|:--------------------------------------------|
+|  id           | Optional, integer |  =, nte                 | all                   | Filter customers by id                                 |
+|  name     | Optional, string   |  =, nte                 | all                   | Filter customers by name                           |
+|  type       | Optional, string   |  =, nte                 | I, B, i, b           | Filter customers by type                             |
+|  email     | Optional, string   |  =, nte                 | email               | Filter customers by email                           |
+|  address | Optional, string   |  =, nte                 | all                   | Filter customers by address                        |
+|  city        | Optional, string   |  =, nte                 | all                   | Filter customers by city                               |
+|  state      | Optional, string   |  =, nte                 | all                   | Filter customers by state                             |
+|  postalCode     | Optional, string \| integer   |  =, nte, gt, lt, gte, lte                 | all                   | Filter customers by postalCode                           |
+|  includeInvoices   |  boolean    |  =    |  true    |  Retrives all associated Invoices along with each customer   |
+
+**Example Request:**
+```shell
+curl -X GET "https://example.com/api/customers?type=I&city[nte]=Kolkata&postalCode[gt]=123243" \
+     -H "Authorization: Bearer YOUR_API_KEY"
+```
+### Get Specific Customer
+
+`GET /api/v1/customers/<id>`
+
+Retrives a list of all available customers. 
+`Status - 200`
+
+**Parameters**
+No Parameter allowed.
+
+**Example Request:**
+```shell
+curl -X GET "https://example.com/api/customers/23" \
+     -H "Authorization: Bearer YOUR_API_KEY"
+```
+### Store Customer Record
+
+`POST /api/v1/customers/`
+
+Creates a customer record. `Status - 201`
+
+**Parameters**
+
+|Parameter|Type                     |Allowed Values|
+|:----------|:------------------|:---------------|
+|  name     | Required, string   |all                    |
+|  type       | Required, string   |I, B, i, b            |
+|  email     | Required, string   |email, unique   |
+|  address | Required, string   | all                    |
+|  city        | Required, string   |all                     |
+|  state      | Required, string   | all                    |
+|  postalCode | Required, string \| integer   | all                   |
+
+**Request Body**
+```json
+{
+  "name": "Jhon doe",
+  "type": "I",
+    ... ,
+  "postalCode": 123444
+}
+```
+**Example Request:**
+```shell
+curl -X POST "https://example.com/api/customers" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Jhon Doe", "type": "I", ... ,"postalCode": 123444}'
+```
+**Example Reponse ( 201 )**
+```json
+{
+  "id" : 12,
+  "name": "Jhon doe",
+  "type": "I",
+    ... ,
+  "postalCode": 123444
+}
+
+```
+### Update Customer Record
+
+`PUT /api/v1/customers/<id>`
+
+Updates whlole customer record. `Status - 200`
+
+**Parameters**
+
+Same as POST.
+
+**Request Body**
+```json
+{
+  "name": "Jhon doe",
+  "type": "I",
+    ... ,
+  "postalCode": 123444
+}
+```
+**Example Request:**
+```shell
+curl -X PUT "https://example.com/api/customers" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Jhon Doe", "type": "I", ... ,"postalCode": 123444}'
+```
+**Example Reponse ( 200 )**
+```json
+{ }
+```
+`PATCH /api/v1/customers/<id>`
+
+Updates a specific details of a customer. `Status - 200`
+
+**Parameters**
+
+Same as POST, but all parameters are not mandatory
+
+**Request Body**
+```json
+{
+  "name": "Jhon doe",
+  "type": "I",
+}
+```
+**Example Request:**
+```shell
+curl -X PUT "https://example.com/api/customers" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Jhon Doe", "type": "I"}'
+```
+**Example Reponse ( 200 )**
+```json
+{ }
+```
+### Delete Specific Customer
+
+`DELETE /api/v1/customers/<id>`
+
+Deletes a customer record. 
+`Status - 204`
+
+**Parameters**
+No Parameter allowed.
+
+**Example Request:**
+```shell
+curl -X DELETE "https://example.com/api/customers/23" \
+     -H "Authorization: Bearer YOUR_API_KEY"
+```
+**Example Reponse ( 204 )**
+```json
+{ }
+```
+
+### Get All Invoices
+
+`GET /api/v1/invoices`
+
+Retrives a list of all available customers. 
+`Status - 200`
+
+**Parameters**
+
+|Parameter      |Type                            |Allowed Operators       |Allowed Values|Description                                                              |
+|:--------------|:-----------------------|:-----------------------|:---------------|:----------------------------------------------------|
+|  id                 | Optional, integer         |  =, nte                       | all                   | Filter invoices by id                                                   |
+|  customerId  | Optional, integer         |  =, nte                       | all                   | Filter invoices by customer id                                   |
+|  amount        | Optional, integer         |  =, nte, gt, lt, gte, lte  | all                  | Filter invoices by amount                                          |
+|  status           | Optional, string           |  =, nte                       | V, P, B, v, p, b | Filter invoices by status, V: Void, B: Billed, P : Paid  |
+|  billedDate    | Optional, date-string   |  =, nte, gt, lt, gte, lte | Y- m - d H : i : s                   | Filter invoices by billed date                                     |
+|  paidDate      | Optional, date-string   |  =, nte, gt, lt, gte, lte | Y- m - d H : i : s                      | Filter invoices by paid date                                      |
+
+**Example Request:**
+```shell
+curl -X GET "https://example.com/api/invoices?status=P&amount[gte]=2500" \
+     -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+### Get Specific Invoice
+
+`GET /api/v1/invoices/<id>`
+
+Retrives a list of all available customers. 
+`Status - 200`
+
+**Parameters**
+No Parameter allowed.
+
+**Example Request:**
+```shell
+curl -X GET "https://example.com/api/invoices/23" \
+     -H "Authorization: Bearer YOUR_API_KEY"
+```
+### Store Customer Record
+
+`POST /api/v1/invoices/`
+
+Creates a invoice record. `Status - 201`
+
+**Parameters**
+
+|Parameter|Type                     |Allowed Values|
+|:----------|:------------------|:---------------|
+|  customerId     | Required, integer   |all                    |
+|  amount       | Required, integer   | all            |
+|  status     | Required, string   | P, V, B, p, v, b  |
+|  billedDate | Required, string   | date                    |
+|  paidDate        | string   |date                     |
+
+**Request Body**
+```json
+{
+  "customerId": 1,
+  "amount": 2500,
+  "status": "p",
+  "billedDate" : "2025-12-8 16:23:00"
+}
+```
+**Example Request:**
+```shell
+curl -X POST "https://example.com/api/customers" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"customerId": 1, "amount": 2500, ... ,"billedDate": "2025-12-8 16:23:00"}'
+```
+**Example Reponse ( 201 )**
+```json
+{
+  "id" : 12,
+  "customerId": 1,
+  "amount": 2500,
+  "status": "p",
+  "billedDate" : "2025-12-8 16:23:00",
+  "paidDate": null
+}
+
+```
+### Update Invoice Record
+
+`PUT /api/v1/customers/<id>`
+
+Updates whole invoice record. `Status - 200`
+
+**Parameters**
+
+Same as POST.
+
+**Request Body**
+```json
+{
+  "customerId": 1,
+  "amount": 2500,
+  "status": "p",
+  "billedDate" : "2025-12-8 16:23:00"
+}
+```
+**Example Request:**
+```shell
+curl -X PUT "https://example.com/api/customers" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"customerId": 1, "amount": 2500, ... ,"billedDate": "2025-12-8 16:23:00"}'
+```
+**Example Reponse ( 200 )**
+```json
+{ }
+```
+`PATCH /api/v1/customers/<id>`
+
+Updates a specific details of a invoice. `Status - 200`
+
+**Parameters**
+
+Same as POST, but all parameters are not mandatory
+
+**Request Body**
+```json
+{
+  "status": "V",
+}
+```
+**Example Request:**
+```shell
+curl -X PUT "https://example.com/api/customers" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"status" : "V"}'
+```
+**Example Reponse ( 200 )**
+```json
+{ }
+``````
+### Delete Specific Customer
+
+`DELETE /api/v1/invoices/<id>`
+
+Deletes the Invoice Record.
+`Status - 204`
+
+**Parameters**
+No Parameter allowed.
+
+**Example Request:**
+```shell
+curl -X DELETE "https://example.com/api/invoices/23" \
+     -H "Authorization: Bearer YOUR_API_KEY"
+```
+**Example Reponse ( 204 )**
+```json
+{ }
+```
+
 
 ## License
 
